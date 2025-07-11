@@ -55,23 +55,18 @@ const Sidebar = ({ className }: { className?: string }) => {
       children: [
         {
           icon: <Pill size={18} />,
-          label: "Medications",
-          to: "/products/medications",
+          label: "All Products",
+          to: "/products",
         },
         {
           icon: <Stethoscope size={18} />,
-          label: "Medical Supplies",
-          to: "/products/supplies",
+          label: "Product Attributes",
+          to: "/products/attributes",
         },
         {
-          icon: <Thermometer size={18} />,
-          label: "Equipment",
-          to: "/products/equipment",
-        },
-        {
-          icon: <Syringe size={18} />,
-          label: "Vaccines",
-          to: "/products/vaccines",
+          icon: <Plus size={18} />,
+          label: "Add Product",
+          to: "/products/add",
         },
       ],
     },

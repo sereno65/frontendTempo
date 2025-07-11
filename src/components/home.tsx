@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Home,
   Package,
@@ -59,19 +59,21 @@ const HomePage = () => {
   };
 
   const [currentMetrics, setCurrentMetrics] = useState({
-  totalSales: 0,
-  totalPurchases: 0,
-  profit: 0,
-  todaysSales: 0,
-});
+    totalSales: 0,
+    totalPurchases: 0,
+    profit: 0,
+    todaysSales: 0,
+  });
 
   useEffect(() => {
-  const dateStr = selectedDate.toISOString().split("T")[0];
-  fetch(`http://localhost:8000/produits/api/dashboard-metrics/?date=${dateStr}`)
-    .then((res) => res.json())
-    .then((data) => setCurrentMetrics(data))
-    .catch((error) => console.error("Erreur fetch dashboard:", error));
-}, [selectedDate]);
+    const dateStr = selectedDate.toISOString().split("T")[0];
+    fetch(
+      `http://localhost:8000/produits/api/dashboard-metrics/?date=${dateStr}`,
+    )
+      .then((res) => res.json())
+      .then((data) => setCurrentMetrics(data))
+      .catch((error) => console.error("Erreur fetch dashboard:", error));
+  }, [selectedDate]);
 
   return (
     <div className="flex h-screen bg-background">
@@ -125,22 +127,25 @@ const HomePage = () => {
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start"
+                    asChild
                   >
-                    All Products
+                    <Link to="/products">All Products</Link>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start"
+                    asChild
                   >
-                    Categories
+                    <Link to="/products/attributes">Product Attributes</Link>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start"
+                    asChild
                   >
-                    Expiring Soon
+                    <Link to="/products/add">Add Product</Link>
                   </Button>
                 </div>
               )}
@@ -171,8 +176,9 @@ const HomePage = () => {
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start"
-                  asChild>
-                    <Link to="/sales/new">Sales New</Link>
+                    asChild
+                  >
+                    <Link to="/sales/new">New Sale</Link>
                   </Button>
                   <Button
                     variant="ghost"
@@ -217,22 +223,25 @@ const HomePage = () => {
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start"
+                    asChild
                   >
-                    New Purchase
+                    <Link to="/purchases/new">New Purchase</Link>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start"
+                    asChild
                   >
-                    Purchase History
+                    <Link to="/purchases/history">Purchase History</Link>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start"
+                    asChild
                   >
-                    Suppliers
+                    <Link to="/purchases/orders">Purchase Orders</Link>
                   </Button>
                 </div>
               )}

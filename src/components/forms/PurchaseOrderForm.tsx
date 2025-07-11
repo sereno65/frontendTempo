@@ -428,27 +428,29 @@ const PurchaseOrderForm = ({
                             />
                             {productSearch && filteredProducts.length > 0 && (
                               <div className="absolute z-10 w-full bg-white border rounded-md shadow-lg max-h-40 overflow-y-auto">
-                                {filteredProducts.map((product) => (
-                                  <div
-                                    key={product.id}
-                                    className="p-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center"
-                                    onClick={() =>
-                                      selectProduct(index, product)
-                                    }
-                                  >
-                                    <div>
-                                      <div className="font-medium">
-                                        {product.name}
+                                {filteredProducts
+                                  .sort((a, b) => a.name.localeCompare(b.name))
+                                  .map((product) => (
+                                    <div
+                                      key={product.id}
+                                      className="p-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center"
+                                      onClick={() =>
+                                        selectProduct(index, product)
+                                      }
+                                    >
+                                      <div>
+                                        <div className="font-medium">
+                                          {product.name}
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                          Cost: ${product.cost.toFixed(2)}
+                                        </div>
                                       </div>
-                                      <div className="text-sm text-muted-foreground">
-                                        Cost: ${product.cost.toFixed(2)}
-                                      </div>
+                                      <Badge variant="outline">
+                                        Stock: {product.currentStock}
+                                      </Badge>
                                     </div>
-                                    <Badge variant="outline">
-                                      Stock: {product.currentStock}
-                                    </Badge>
-                                  </div>
-                                ))}
+                                  ))}
                               </div>
                             )}
                           </div>
