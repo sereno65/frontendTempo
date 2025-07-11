@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Home,
   Package,
@@ -26,6 +26,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -57,23 +58,20 @@ const HomePage = () => {
     }
   };
 
-  // Generate date-based metrics (mock data that changes based on selected date)
-  const getMetricsForDate = (date: Date) => {
-    const dayOfYear = Math.floor(
-      (date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) /
-        (1000 * 60 * 60 * 24),
-    );
-    const baseMultiplier = (dayOfYear % 30) + 1;
+  const [currentMetrics, setCurrentMetrics] = useState({
+  totalSales: 0,
+  totalPurchases: 0,
+  profit: 0,
+  todaysSales: 0,
+});
 
-    return {
-      totalProducts: 1200 + baseMultiplier * 2,
-      lowStockItems: 20 + (baseMultiplier % 15),
-      expiringSoon: 10 + (baseMultiplier % 8),
-      todaysSales: 1500 + baseMultiplier * 15,
-    };
-  };
-
-  const currentMetrics = getMetricsForDate(selectedDate);
+  useEffect(() => {
+  const dateStr = selectedDate.toISOString().split("T")[0];
+  fetch(`http://localhost:8000/produits/api/dashboard-metrics/?date=${dateStr}`)
+    .then((res) => res.json())
+    .then((data) => setCurrentMetrics(data))
+    .catch((error) => console.error("Erreur fetch dashboard:", error));
+}, [selectedDate]);
 
   return (
     <div className="flex h-screen bg-background">
@@ -173,8 +171,8 @@ const HomePage = () => {
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start"
-                  >
-                    New Sale
+                  asChild>
+                    <Link to="/sales/new">Sales New</Link>
                   </Button>
                   <Button
                     variant="ghost"
@@ -307,12 +305,12 @@ const HomePage = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Total Products
+                  Total Sales
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {currentMetrics.totalProducts.toLocaleString()}
+                  {currentMetrics.totalSales.toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   +12% from last month
@@ -322,12 +320,27 @@ const HomePage = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Low Stock Items
+                  Total Sales
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {currentMetrics.totalSales.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  +12% from last month
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Total Purchases
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-amber-500">
-                  {currentMetrics.lowStockItems}
+                  {currentMetrics.totalPurchases}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Requires attention
@@ -337,12 +350,12 @@ const HomePage = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Expiring Soon
+                  Profit
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-red-500">
-                  {currentMetrics.expiringSoon}
+                  {currentMetrics.profit}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Within 30 days
@@ -355,7 +368,7 @@ const HomePage = () => {
                   {selectedDate.toDateString() === new Date().toDateString()
                     ? "Today's"
                     : "Selected Day"}{" "}
-                  Sales
+                  Number of Products Sold
                 </CardTitle>
               </CardHeader>
               <CardContent>
