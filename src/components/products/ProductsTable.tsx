@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Search,
   Filter,
@@ -46,7 +46,6 @@ interface ProductsTableProps {
 }
 
 const ProductsTable = ({
-  products = defaultProducts,
   onAddProduct = () => {},
   onEditProduct = () => {},
   onDeleteProduct = () => {},
@@ -55,6 +54,27 @@ const ProductsTable = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<keyof Product | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+  fetch("http://localhost:8000/produits/")
+    .then((res) => res.json())
+    .then((data) => {
+      const mappedProducts = data.map((item: any) => ({
+        id: item.id.toString(),
+        name: item.name || "",
+        sku: item.sku || "N/A",
+        category: item.category || "N/A",
+        stock: item.stock || 0,
+        expirationDate: item.expirationDate || "2099-12-31",
+        price: item.price || 0,
+      }));
+      setProducts(mappedProducts);
+    })
+    .catch((error) =>
+      console.error("Erreur lors du chargement des produits :", error)
+    );
+  }, []);
 
   const handleSort = (field: keyof Product) => {
     if (sortField === field) {
@@ -68,7 +88,6 @@ const ProductsTable = ({
   const filteredProducts = products.filter(
     (product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.category.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
@@ -293,98 +312,5 @@ const ProductsTable = ({
     </Card>
   );
 };
-
-const defaultProducts: Product[] = [
-  {
-    id: "1",
-    name: "Paracetamol 500mg",
-    sku: "MED-PAR-500",
-    category: "Pain Relief Tablets",
-    stock: 120,
-    expirationDate: "2025-06-15",
-    price: 5.99,
-  },
-  {
-    id: "2",
-    name: "Amoxicillin 250mg",
-    sku: "MED-AMO-250",
-    category: "Antibiotic Capsules",
-    stock: 45,
-    expirationDate: "2024-09-20",
-    price: 12.5,
-  },
-  {
-    id: "3",
-    name: "Ibuprofen 200mg",
-    sku: "MED-IBU-200",
-    category: "Pain Relief Tablets",
-    stock: 85,
-    expirationDate: "2025-03-10",
-    price: 6.75,
-  },
-  {
-    id: "4",
-    name: "Cetirizine 10mg",
-    sku: "MED-CET-010",
-    category: "Allergy Tablets",
-    stock: 32,
-    expirationDate: "2024-11-05",
-    price: 8.25,
-  },
-  {
-    id: "5",
-    name: "Cough Syrup 100ml",
-    sku: "MED-COU-100",
-    category: "Cough Syrup",
-    stock: 18,
-    expirationDate: "2024-07-30",
-    price: 9.99,
-  },
-  {
-    id: "6",
-    name: "Vitamin C 1000mg",
-    sku: "VIT-C-1000",
-    category: "Vitamin Tablets",
-    stock: 60,
-    expirationDate: "2026-01-15",
-    price: 14.5,
-  },
-  {
-    id: "7",
-    name: "Aspirin 75mg",
-    sku: "MED-ASP-075",
-    category: "Pain Relief Tablets",
-    stock: 95,
-    expirationDate: "2025-08-22",
-    price: 4.99,
-  },
-  {
-    id: "8",
-    name: "Children's Paracetamol Syrup",
-    sku: "MED-CPS-100",
-    category: "Children's Medicine",
-    stock: 12,
-    expirationDate: "2024-05-18",
-    price: 7.5,
-  },
-  {
-    id: "9",
-    name: "Omeprazole 20mg",
-    sku: "MED-OME-020",
-    category: "Digestive Health",
-    stock: 5,
-    expirationDate: "2025-02-28",
-    price: 11.25,
-  },
-  {
-    id: "10",
-    name: "Multivitamin Complex",
-    sku: "VIT-MUL-001",
-    category: "Vitamin Tablets",
-    stock: 40,
-    expirationDate: "2025-12-10",
-    price: 16.99,
-  },
-];
 
 export default ProductsTable;

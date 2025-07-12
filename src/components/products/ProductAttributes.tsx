@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Package, Calendar, DollarSign, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,16 +26,40 @@ interface ProductAttributesProps {
 }
 
 const ProductAttributes = ({
-  products = defaultProducts,
 }: ProductAttributesProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+  fetch("http://localhost:8000/produits/")
+    .then((res) => res.json())
+    .then((data) => {
+      const mappedProducts = data.map((item: any) => ({
+        id: item.id.toString(),
+        name: item.name || "",
+        sku: item.sku || "N/A",
+        category: item.category || "N/A",
+        stockLevel: item.stock || 0,
+        expirationDate: item.expirationDate || "2099-12-31",
+        price: item.price || 0,
+        costPrice: item.costPrice || 0,
+        description: item.description || "",
+        manufacturer: item.manufacturer || "N/A",
+        location: item.location || "N/A",
+        reorderLevel: item.reorderLevel || 0,
+      }));
+      setProducts(mappedProducts);
+    })
+    .catch((error) =>
+      console.error("Erreur lors du chargement des produits :", error)
+    );
+  }, []);
 
   const filteredProducts = products
     .filter(
       (product) =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.category.toLowerCase().includes(searchTerm.toLowerCase()),
     )
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -281,79 +305,5 @@ const ProductAttributes = ({
     </div>
   );
 };
-
-const defaultProducts: Product[] = [
-  {
-    id: "1",
-    name: "Paracetamol 500mg",
-    sku: "MED-PAR-500",
-    category: "Pain Relief Tablets",
-    description:
-      "Effective pain relief and fever reducer for adults and children over 12 years.",
-    stockLevel: 120,
-    price: 5.99,
-    costPrice: 3.5,
-    expirationDate: "2025-06-15",
-    manufacturer: "PharmaCorp Ltd",
-    location: "Aisle A, Shelf 2",
-    reorderLevel: 20,
-  },
-  {
-    id: "2",
-    name: "Amoxicillin 250mg",
-    sku: "MED-AMO-250",
-    category: "Antibiotic Capsules",
-    description: "Broad-spectrum antibiotic for bacterial infections.",
-    stockLevel: 45,
-    price: 12.5,
-    costPrice: 8.75,
-    expirationDate: "2024-09-20",
-    manufacturer: "MediPharm Inc",
-    location: "Aisle B, Shelf 1",
-    reorderLevel: 15,
-  },
-  {
-    id: "3",
-    name: "Ibuprofen 200mg",
-    sku: "MED-IBU-200",
-    category: "Pain Relief Tablets",
-    description: "Anti-inflammatory pain reliever for muscle and joint pain.",
-    stockLevel: 85,
-    price: 6.75,
-    costPrice: 4.25,
-    expirationDate: "2025-03-10",
-    manufacturer: "HealthCare Solutions",
-    location: "Aisle A, Shelf 3",
-    reorderLevel: 25,
-  },
-  {
-    id: "4",
-    name: "Cetirizine 10mg",
-    sku: "MED-CET-010",
-    category: "Allergy Tablets",
-    description: "Antihistamine for allergic reactions and hay fever.",
-    stockLevel: 32,
-    price: 8.25,
-    costPrice: 5.5,
-    expirationDate: "2024-11-05",
-    manufacturer: "AllergyFree Labs",
-    location: "Aisle C, Shelf 1",
-    reorderLevel: 10,
-  },
-  {
-    id: "5",
-    name: "Vitamin C 1000mg",
-    sku: "VIT-C-1000",
-    category: "Vitamin Tablets",
-    description: "High-strength vitamin C supplement for immune support.",
-    stockLevel: 60,
-    price: 14.5,
-    costPrice: 9.99,
-    expirationDate: "2026-01-15",
-    manufacturer: "VitaHealth Co",
-    location: "Aisle D, Shelf 2",
-    reorderLevel: 20,
-  },
-];
 
 export default ProductAttributes;
